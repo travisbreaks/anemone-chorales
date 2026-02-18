@@ -15,6 +15,7 @@ import type { AudioAnalysis } from '@/types'
 export class AudioAnalyzer {
   private audioContext: AudioContext | null = null
   private analyser: AnalyserNode | null = null
+  private gainNode: GainNode | null = null
   private source: MediaElementAudioSourceNode | null = null
   private audioElement: HTMLAudioElement | null = null
   private frequencyData = new Uint8Array(512)
@@ -72,8 +73,13 @@ export class AudioAnalyzer {
       }
     })
 
+    // GainNode sits between source and analyser — enables click-free fade in/out
+    this.gainNode = this.audioContext.createGain()
+    this.gainNode.gain.value = 0 // start silent — ramp up on play
+
     this.source = this.audioContext.createMediaElementSource(this.audioElement)
-    this.source.connect(this.analyser)
+    this.source.connect(this.gainNode)
+    this.gainNode.connect(this.analyser)
     this.analyser.connect(this.audioContext.destination)
 
     this.frequencyData = new Uint8Array(this.analyser.frequencyBinCount)
@@ -101,17 +107,28 @@ export class AudioAnalyzer {
   }
 
   async play() {
-    if (!this.audioElement || !this.audioContext) return
+    if (!this.audioElement || !this.audioContext || !this.gainNode) return
     if (this.audioContext.state === 'suspended') {
       await this.audioContext.resume()
     }
+    // Ramp gain from 0 → 1 over 50ms — prevents click/pop on start
+    this.gainNode.gain.cancelScheduledValues(this.audioContext.currentTime)
+    this.gainNode.gain.setValueAtTime(0, this.audioContext.currentTime)
+    this.gainNode.gain.linearRampToValueAtTime(1, this.audioContext.currentTime + 0.05)
     await this.audioElement.play()
     this._isPlaying = true
   }
 
   pause() {
-    if (!this.audioElement) return
-    this.audioElement.pause()
+    if (!this.audioElement || !this.audioContext || !this.gainNode) return
+    // Ramp gain to 0 over 30ms, then pause — prevents mobile audio loop artifact
+    this.gainNode.gain.cancelScheduledValues(this.audioContext.currentTime)
+    this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, this.audioContext.currentTime)
+    this.gainNode.gain.linearRampToValueAtTime(0, this.audioContext.currentTime + 0.03)
+    // Pause after ramp completes
+    setTimeout(() => {
+      this.audioElement?.pause()
+    }, 40)
     this._isPlaying = false
     this.zeroLevels()
   }
