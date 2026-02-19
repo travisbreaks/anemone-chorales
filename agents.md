@@ -8,7 +8,7 @@ R3F audio visualizer for Travis's music. Real Web Audio API analysis drives a sh
 - **React 19 + R3F** (Three.js r182) + Vite 7
 - **No postprocessing** — bloom causes flicker in R3F. All glow is shader-based (overdrive tip color + fresnel).
 - Workspace: `anemone-chorales` in CODE monorepo
-- Deploy: subdirectory of travisBREAKS (same pattern as Kimi)
+- Deploy: subdirectory of travisbreaks-site (same pattern as Kimi)
 
 ## File Map
 
