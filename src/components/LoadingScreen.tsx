@@ -102,9 +102,7 @@ export default function LoadingScreen({ progress, phase, onEnter }: Props) {
             }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = isReady
-              ? 'rgba(107, 232, 217, 0.6)'
-              : 'rgba(107, 232, 217, 0.25)'
+            e.currentTarget.style.borderColor = isReady ? 'rgba(107, 232, 217, 0.6)' : 'rgba(107, 232, 217, 0.25)'
             e.currentTarget.style.transform = 'scale(1)'
           }}
         >
@@ -121,9 +119,7 @@ export default function LoadingScreen({ progress, phase, onEnter }: Props) {
               zIndex: 0,
             }}
           />
-          <span style={{ position: 'relative', zIndex: 1 }}>
-            {isReady ? 'ENTER' : `${pct}%`}
-          </span>
+          <span style={{ position: 'relative', zIndex: 1 }}>{isReady ? 'ENTER' : `${pct}%`}</span>
         </button>
 
         {/* Anemone icon */}
@@ -159,31 +155,21 @@ export default function LoadingScreen({ progress, phase, onEnter }: Props) {
             />
           ))}
 
-          {tendrils.filter((_, i) => progress > 0.3 + i * 0.04).map((t) => (
-            <circle
-              key={`tip-${t.i}`}
-              cx={t.tipX}
-              cy={t.tipY}
-              r={1.2 + progress * 1}
-              fill="#4DE8D4"
-              opacity={0.6 + progress * 0.3}
-            />
-          ))}
+          {tendrils
+            .filter((_, i) => progress > 0.3 + i * 0.04)
+            .map((t) => (
+              <circle
+                key={`tip-${t.i}`}
+                cx={t.tipX}
+                cy={t.tipY}
+                r={1.2 + progress * 1}
+                fill="#4DE8D4"
+                opacity={0.6 + progress * 0.3}
+              />
+            ))}
 
-          <circle
-            cx={0}
-            cy={0}
-            r={5 + progress * 2.5}
-            fill="url(#coreGrad)"
-          />
-          <circle
-            cx={0}
-            cy={0}
-            r={7 + progress * 4}
-            fill="none"
-            stroke="rgba(107, 232, 217, 0.15)"
-            strokeWidth={1}
-          />
+          <circle cx={0} cy={0} r={5 + progress * 2.5} fill="url(#coreGrad)" />
+          <circle cx={0} cy={0} r={7 + progress * 4} fill="none" stroke="rgba(107, 232, 217, 0.15)" strokeWidth={1} />
         </svg>
       </div>
     </div>

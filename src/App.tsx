@@ -1,12 +1,12 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
 import { Canvas } from '@react-three/fiber'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
-import type { AnemoneConfig, AudioAnalysis } from '@/types'
-import { DEFAULT_CONFIG } from '@/types'
 import { AudioAnalyzer } from '@/audio/AudioAnalyzer'
 import AnemoneScene from '@/components/AnemoneScene'
-import OverlayControls from '@/components/OverlayControls'
 import LoadingScreen from '@/components/LoadingScreen'
+import OverlayControls from '@/components/OverlayControls'
+import type { AnemoneConfig, AudioAnalysis } from '@/types'
+import { DEFAULT_CONFIG } from '@/types'
 
 const emptyAnalysis: AudioAnalysis = {
   frequencyData: new Uint8Array(64),
@@ -35,7 +35,10 @@ export default function App() {
   const mouseRef = useRef({ x: 0, y: 0 })
   const heatRef = useRef(0)
   // Depth mode: 'normal' | 'ascending' | 'paused' — shared between AnemoneScene and OverlayControls
-  const depthModeRef = useRef<{ mode: 'normal' | 'ascending' | 'paused'; pauseUntil: number }>({ mode: 'normal', pauseUntil: 0 })
+  const depthModeRef = useRef<{ mode: 'normal' | 'ascending' | 'paused'; pauseUntil: number }>({
+    mode: 'normal',
+    pauseUntil: 0,
+  })
 
   const analyzerRef = useRef<AudioAnalyzer | null>(null)
   const lastTimeRef = useRef(0)
@@ -46,7 +49,9 @@ export default function App() {
     const analyzer = new AudioAnalyzer()
     analyzerRef.current = analyzer
     analyzer.onStateChange = (playing) => setIsPlaying(playing)
-    analyzer.onProgress = (p) => { realProgressRef.current = p }
+    analyzer.onProgress = (p) => {
+      realProgressRef.current = p
+    }
 
     analyzer.init('./anemone-chorales-vol1.mp3').then(() => {
       audioReadyRef.current = true
@@ -66,9 +71,7 @@ export default function App() {
       const elapsed = now - startTime
       const t = Math.min(elapsed / DURATION, 1)
       // easeInOutCubic — slow start, fast middle, slow end
-      const eased = t < 0.5
-        ? 4 * t * t * t
-        : 1 - Math.pow(-2 * t + 2, 3) / 2
+      const eased = t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2
 
       setDisplayProgress(eased)
 
@@ -184,13 +187,7 @@ export default function App() {
 
   return (
     <div style={{ width: '100vw', height: '100vh', background: '#020810' }}>
-      {showLoading && (
-        <LoadingScreen
-          progress={displayProgress}
-          phase={loadPhase}
-          onEnter={handleEnter}
-        />
-      )}
+      {showLoading && <LoadingScreen progress={displayProgress} phase={loadPhase} onEnter={handleEnter} />}
 
       {/* Don't mount Canvas until loading screen starts fading — prevents WebGL color-space mismatch lines */}
       {(loadPhase === 'transition' || loadPhase === 'done') && (
@@ -203,7 +200,13 @@ export default function App() {
           dpr={[1, 2]}
         >
           <color attach="background" args={['#020810']} />
-          <AnemoneScene config={config} analysisRef={analysisRef} mouseRef={mouseRef} heatRef={heatRef} depthModeRef={depthModeRef} />
+          <AnemoneScene
+            config={config}
+            analysisRef={analysisRef}
+            mouseRef={mouseRef}
+            heatRef={heatRef}
+            depthModeRef={depthModeRef}
+          />
         </Canvas>
       )}
 

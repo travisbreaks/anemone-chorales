@@ -1,5 +1,5 @@
-import { useRef, useMemo } from 'react'
 import { useLoader } from '@react-three/fiber'
+import { useMemo, useRef } from 'react'
 import * as THREE from 'three'
 
 /**
@@ -48,12 +48,7 @@ export default function ReefGround() {
   }, [texture])
 
   return (
-    <mesh
-      ref={meshRef}
-      position={[0, -0.6, 0]}
-      rotation={[-Math.PI / 2, 0, 0]}
-      material={material}
-    >
+    <mesh ref={meshRef} position={[0, -0.6, 0]} rotation={[-Math.PI / 2, 0, 0]} material={material}>
       <planeGeometry args={[18, 12]} />
     </mesh>
   )

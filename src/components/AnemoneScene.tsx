@@ -1,7 +1,6 @@
-import { useRef, useMemo, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
+import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
-import type { AnemoneConfig, AudioAnalysis } from '@/types'
 import { BIOMES } from '@/biomes'
 import {
   createAnemoneGeometry,
@@ -9,9 +8,10 @@ import {
   updateAnemoneUniforms,
   updateBiomeUniforms,
 } from '@/shaders/anemoneShader'
+import type { AnemoneConfig, AudioAnalysis } from '@/types'
+import CausticPlane from './Caustics'
 import OceanBackground from './OceanBackground'
 import Particles from './Particles'
-import CausticPlane from './Caustics'
 import ReefGround from './ReefGround'
 
 interface Props {
@@ -40,7 +40,7 @@ function createAnemoneBase(): THREE.BufferGeometry {
     const rib = Math.sin(angle * ribCount) * 0.06
 
     const yNorm = y / 0.95
-    const ribStrength = Math.max(0, 1.0 - Math.pow(Math.abs(yNorm), 1.2))
+    const ribStrength = Math.max(0, 1.0 - Math.abs(yNorm) ** 1.2)
 
     const bulge = 1.0 + Math.sin((yNorm + 0.3) * Math.PI) * 0.12
 
@@ -147,10 +147,7 @@ export default function AnemoneScene({ config, analysisRef, mouseRef, heatRef, d
 
   const biome = BIOMES[config.biome]
 
-  const geometry = useMemo(
-    () => createAnemoneGeometry(config.density),
-    [config.density],
-  )
+  const geometry = useMemo(() => createAnemoneGeometry(config.density), [config.density])
 
   const material = useMemo(() => createAnemoneMaterial(BIOMES.biolum), [])
 
@@ -170,9 +167,7 @@ export default function AnemoneScene({ config, analysisRef, mouseRef, heatRef, d
 
     // ── Perceived Intensity ──
     // Non-linear combo: bass hits hardest, weighted toward peaks
-    const rawIntensity = Math.pow(analysis.bassLevel, 0.8) * 0.5
-      + Math.pow(analysis.midLevel, 0.9) * 0.3
-      + analysis.trebleLevel * 0.2
+    const rawIntensity = analysis.bassLevel ** 0.8 * 0.5 + analysis.midLevel ** 0.9 * 0.3 + analysis.trebleLevel * 0.2
     // Fast rise (0.15), slow decay (0.03) — hits feel punchy, decay feels organic
     const target = Math.min(rawIntensity, 1.0)
     const rate = target > intensityRef.current ? 0.15 : 0.03
@@ -233,8 +228,8 @@ export default function AnemoneScene({ config, analysisRef, mouseRef, heatRef, d
     // Stage 1 (heat < 0.3): no beat reaction, just gentle float
     // Stage 2 (heat 0.3-0.7): bass shove engages
     // Stage 3 (heat > 0.7): full shake + shove
-    const shoveGate = Math.max(0, (heat - 0.2) / 0.5)  // 0 at heat 0.2, 1 at heat 0.7
-    const shakeGate = Math.max(0, (heat - 0.5) / 0.5)  // 0 at heat 0.5, 1 at heat 1.0
+    const shoveGate = Math.max(0, (heat - 0.2) / 0.5) // 0 at heat 0.2, 1 at heat 0.7
+    const shakeGate = Math.max(0, (heat - 0.5) / 0.5) // 0 at heat 0.5, 1 at heat 1.0
 
     // BASS SURGE: smooth push toward camera (stage 2+)
     const bassShoveTarget = analysis.bassLevel * shoveGate * 0.5

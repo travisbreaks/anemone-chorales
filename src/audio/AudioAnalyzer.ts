@@ -161,14 +161,14 @@ export class AudioAnalyzer {
     for (let i = 1; i <= 5; i++) {
       rawBass += this.frequencyData[i]
     }
-    rawBass = (rawBass / 5) / 255
+    rawBass = rawBass / 5 / 255
 
     // Mids: bins 5-40 (~215-1720Hz) — warmth through melodic body
     let rawMid = 0
     for (let i = 5; i < 40; i++) {
       rawMid += this.frequencyData[i]
     }
-    rawMid = (rawMid / 35) / 255
+    rawMid = rawMid / 35 / 255
 
     // Treble: bins 40-120 (~1720-5160Hz) — presence, hi-hats, sparkle
     let rawTreble = 0
@@ -176,7 +176,7 @@ export class AudioAnalyzer {
     for (let i = 40; i < trebleEnd; i++) {
       rawTreble += this.frequencyData[i]
     }
-    rawTreble = (rawTreble / (trebleEnd - 40)) / 255
+    rawTreble = rawTreble / (trebleEnd - 40) / 255
 
     // ── Transient detection ──
     // Compare current raw bass to previous frame. Big jump = transient (kick, drop)
@@ -206,7 +206,7 @@ export class AudioAnalyzer {
       midLevel: this.midLevel,
       trebleLevel: this.trebleLevel,
       transientLevel: this.transientLevel,
-      overallEnergy: (this.bassLevel * 0.4 + this.midLevel * 0.35 + this.trebleLevel * 0.25),
+      overallEnergy: this.bassLevel * 0.4 + this.midLevel * 0.35 + this.trebleLevel * 0.25,
       bpm: 120,
     }
   }
