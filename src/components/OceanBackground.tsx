@@ -1,5 +1,5 @@
-import { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
+import { useMemo, useRef } from 'react'
 import * as THREE from 'three'
 
 interface Props {
@@ -17,17 +17,19 @@ export default function OceanBackground({ mouseRef }: Props) {
   const bokehFarRef = useRef<THREE.Points>(null!)
 
   // ── Ocean gradient backdrop ──
-  const bgMaterial = useMemo(() => new THREE.ShaderMaterial({
-    depthWrite: false,
-    uniforms: { uTime: { value: 0 } },
-    vertexShader: /* glsl */ `
+  const bgMaterial = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        depthWrite: false,
+        uniforms: { uTime: { value: 0 } },
+        vertexShader: /* glsl */ `
       varying vec2 vUv;
       void main() {
         vUv = uv;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }
     `,
-    fragmentShader: /* glsl */ `
+        fragmentShader: /* glsl */ `
       uniform float uTime;
       varying vec2 vUv;
       void main() {
@@ -57,26 +59,30 @@ export default function OceanBackground({ mouseRef }: Props) {
         gl_FragColor = vec4(color, 1.0);
       }
     `,
-  }), [])
+      }),
+    [],
+  )
 
   // ── God rays from surface ──
-  const rayMaterial = useMemo(() => new THREE.ShaderMaterial({
-    transparent: true,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending,
-    side: THREE.DoubleSide,
-    uniforms: {
-      uOpacity: { value: 0.04 },
-      uTime: { value: 0 },
-    },
-    vertexShader: /* glsl */ `
+  const rayMaterial = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide,
+        uniforms: {
+          uOpacity: { value: 0.04 },
+          uTime: { value: 0 },
+        },
+        vertexShader: /* glsl */ `
       varying vec2 vUv;
       void main() {
         vUv = uv;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }
     `,
-    fragmentShader: /* glsl */ `
+        fragmentShader: /* glsl */ `
       uniform float uOpacity;
       uniform float uTime;
       varying vec2 vUv;
@@ -94,16 +100,22 @@ export default function OceanBackground({ mouseRef }: Props) {
         gl_FragColor = vec4(color, alpha);
       }
     `,
-  }), [])
+      }),
+    [],
+  )
 
   // ── Ray configs ──
-  const rays = useMemo(() => Array.from({ length: RAY_COUNT }, (_, i) => ({
-    x: (i - (RAY_COUNT - 1) / 2) * 2.2 + (Math.random() - 0.5) * 1.0,
-    width: 1.5 + Math.random() * 2.0,
-    opacity: 0.015 + Math.random() * 0.03,
-    angle: (Math.random() - 0.5) * 0.12,
-    phase: Math.random() * Math.PI * 2,
-  })), [])
+  const rays = useMemo(
+    () =>
+      Array.from({ length: RAY_COUNT }, (_, i) => ({
+        x: (i - (RAY_COUNT - 1) / 2) * 2.2 + (Math.random() - 0.5) * 1.0,
+        width: 1.5 + Math.random() * 2.0,
+        opacity: 0.015 + Math.random() * 0.03,
+        angle: (Math.random() - 0.5) * 0.12,
+        phase: Math.random() * Math.PI * 2,
+      })),
+    [],
+  )
 
   // ── Bokeh orbs (mid-distance) ──
   const bokehData = useMemo(() => {
@@ -152,12 +164,14 @@ export default function OceanBackground({ mouseRef }: Props) {
     return geo
   }, [bokehFarData])
 
-  const bokehMaterial = useMemo(() => new THREE.ShaderMaterial({
-    transparent: true,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending,
-    uniforms: {},
-    vertexShader: /* glsl */ `
+  const bokehMaterial = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        uniforms: {},
+        vertexShader: /* glsl */ `
       attribute float aSize;
       attribute float aOpacity;
       varying float vOpacity;
@@ -168,7 +182,7 @@ export default function OceanBackground({ mouseRef }: Props) {
         gl_Position = projectionMatrix * mvPosition;
       }
     `,
-    fragmentShader: /* glsl */ `
+        fragmentShader: /* glsl */ `
       varying float vOpacity;
       void main() {
         float d = length(gl_PointCoord - 0.5) * 2.0;
@@ -179,7 +193,9 @@ export default function OceanBackground({ mouseRef }: Props) {
         gl_FragColor = vec4(color, alpha);
       }
     `,
-  }), [])
+      }),
+    [],
+  )
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime()
@@ -218,7 +234,7 @@ export default function OceanBackground({ mouseRef }: Props) {
 
     // Far bokeh parallax (slightly more movement for depth)
     if (bokehFarRef.current) {
-      bokehFarRef.current.position.x = mx * 0.10
+      bokehFarRef.current.position.x = mx * 0.1
       bokehFarRef.current.position.y = my * 0.06
     }
   })
@@ -236,12 +252,7 @@ export default function OceanBackground({ mouseRef }: Props) {
           const mat = rayMaterial.clone()
           mat.uniforms.uOpacity.value = ray.opacity
           return (
-            <mesh
-              key={i}
-              position={[ray.x, 0, 0]}
-              rotation={[0, 0, ray.angle]}
-              material={mat}
-            >
+            <mesh key={i} position={[ray.x, 0, 0]} rotation={[0, 0, ray.angle]} material={mat}>
               <planeGeometry args={[ray.width, 24]} />
             </mesh>
           )

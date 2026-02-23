@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from 'react'
-import type { AnemoneConfig, AudioAnalysis, BiomeId } from '@/types'
+import { useEffect, useRef, useState } from 'react'
 import { BIOMES } from '@/biomes'
+import type { AnemoneConfig, AudioAnalysis, BiomeId } from '@/types'
 
 interface Props {
   config: AnemoneConfig
@@ -16,8 +16,14 @@ interface Props {
 const BIOME_IDS: BiomeId[] = ['biolum', 'abyss', 'gravitas']
 
 export default function OverlayControls({
-  config, isPlaying, audioReady, analysisRef, heatRef, depthModeRef,
-  onConfigChange, onToggleAudio,
+  config,
+  isPlaying,
+  audioReady,
+  analysisRef,
+  heatRef,
+  depthModeRef,
+  onConfigChange,
+  onToggleAudio,
 }: Props) {
   const [artExpanded, setArtExpanded] = useState(false)
   const [hasClicked, setHasClicked] = useState(false)
@@ -159,7 +165,8 @@ export default function OverlayControls({
             const lastY = history[history.length - 1] * ht
             ctx.beginPath()
             ctx.arc(lastX, lastY, 2.5, 0, Math.PI * 2)
-            ctx.fillStyle = h < 0.3 ? 'rgba(107, 232, 217, 0.8)' : h < 0.7 ? 'rgba(196, 91, 160, 0.9)' : 'rgba(255, 255, 255, 0.9)'
+            ctx.fillStyle =
+              h < 0.3 ? 'rgba(107, 232, 217, 0.8)' : h < 0.7 ? 'rgba(196, 91, 160, 0.9)' : 'rgba(255, 255, 255, 0.9)'
             ctx.fill()
           }
         }
@@ -201,11 +208,7 @@ export default function OverlayControls({
       {/* Fullscreen album art overlay */}
       {artExpanded && (
         <div className="art-overlay" onClick={() => setArtExpanded(false)}>
-          <img
-            src="./album-art.png"
-            alt="Anemone Chorales Vol. 1"
-            className="art-fullscreen"
-          />
+          <img src="./album-art.png" alt="Anemone Chorales Vol. 1" className="art-fullscreen" />
         </div>
       )}
 
@@ -214,19 +217,18 @@ export default function OverlayControls({
         {/* Title row — clickable to expand album art */}
         <div className="title-row" onClick={handleArtClick}>
           <div className="album-art-wrap">
-            <img
-              src="./album-art.png"
-              alt="Anemone Chorales Vol. 1"
-              className="album-art"
-            />
+            <img src="./album-art.png" alt="Anemone Chorales Vol. 1" className="album-art" />
             {!hasClicked && (
               <svg className="tap-hint" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 {/* Standard cursor pointer / hand with index finger */}
-                <path d="M10.5 2a1.5 1.5 0 0 1 1.5 1.5v8.75l3.44-1.38a1.5 1.5 0 0 1 1.94.88l.12.32a1.5 1.5 0 0 1-.56 1.7L12.5 17.5l-.5 2.5h-5l-1-3L4 14.5a1.5 1.5 0 0 1-.5-1.12V11.5A1.5 1.5 0 0 1 5 10h.5l1-.5 2.5-1V3.5A1.5 1.5 0 0 1 10.5 2Z"/>
+                <path d="M10.5 2a1.5 1.5 0 0 1 1.5 1.5v8.75l3.44-1.38a1.5 1.5 0 0 1 1.94.88l.12.32a1.5 1.5 0 0 1-.56 1.7L12.5 17.5l-.5 2.5h-5l-1-3L4 14.5a1.5 1.5 0 0 1-.5-1.12V11.5A1.5 1.5 0 0 1 5 10h.5l1-.5 2.5-1V3.5A1.5 1.5 0 0 1 10.5 2Z" />
               </svg>
             )}
           </div>
-          <h1 ref={titleRef}><span className="title-line">Anemone</span><span className="title-line title-line--offset">Chorales</span></h1>
+          <h1 ref={titleRef}>
+            <span className="title-line">Anemone</span>
+            <span className="title-line title-line--offset">Chorales</span>
+          </h1>
         </div>
 
         <div className="panel-divider" />
@@ -310,15 +312,12 @@ export default function OverlayControls({
         <div className="depth-row">
           <div className="depth-header">
             <span className="depth-title">DEPTH</span>
-            <span className="depth-label" ref={depthLabelRef}>SURFACE</span>
+            <span className="depth-label" ref={depthLabelRef}>
+              SURFACE
+            </span>
           </div>
           <div className="depth-chart-wrap">
-            <canvas
-              ref={depthCanvasRef}
-              width={280}
-              height={48}
-              className="depth-canvas"
-            />
+            <canvas ref={depthCanvasRef} width={280} height={48} className="depth-canvas" />
           </div>
           <button
             ref={resetBtnRef}

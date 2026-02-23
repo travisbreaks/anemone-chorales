@@ -1,4 +1,4 @@
-import type { BiomeId, Biome } from '@/types'
+import type { Biome, BiomeId } from '@/types'
 
 export const BIOMES: Record<BiomeId, Biome> = {
   biolum: {

@@ -267,11 +267,11 @@ export function createAnemoneGeometry(density: number): THREE.BufferGeometry {
       const h = s / SEGMENTS // 0 = base, 1 = tip
 
       // Rounded bubble-tip: thin stalk that swells into a smooth bulb
-      const stalk = 1.0 - h * 0.7               // gradual thin: 1.0 → 0.3
-      const bulbStart = 0.5                       // bulb starts earlier for smoother curve
-      const bulb = Math.pow(Math.max(0, (h - bulbStart) / (1.0 - bulbStart)), 1.5)
+      const stalk = 1.0 - h * 0.7 // gradual thin: 1.0 → 0.3
+      const bulbStart = 0.5 // bulb starts earlier for smoother curve
+      const bulb = Math.max(0, (h - bulbStart) / (1.0 - bulbStart)) ** 1.5
       // Close off at the very tip for roundness (not flat-ended)
-      const tipClose = Math.pow(Math.max(0, (h - 0.9) / 0.1), 2.0)
+      const tipClose = Math.max(0, (h - 0.9) / 0.1) ** 2.0
       const ringRadius = 0.08 * (stalk + bulb * 3.2) * (1.0 - tipClose * 0.5)
 
       // Tentacle centerline position (straight up, shader does the sway)

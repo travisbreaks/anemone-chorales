@@ -1,5 +1,5 @@
-import { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
+import { useMemo, useRef } from 'react'
 import * as THREE from 'three'
 
 const COUNT = 35
@@ -20,7 +20,7 @@ export default function Particles() {
       pos[i * 3 + 2] = (Math.random() - 0.5) * 10
       vel[i] = 0.004 + Math.random() * 0.012
       // More translucent — like organic debris in water
-      opa[i] = 0.04 + Math.random() * 0.10
+      opa[i] = 0.04 + Math.random() * 0.1
       wPhase[i] = Math.random() * Math.PI * 2
       wSpeed[i] = 0.3 + Math.random() * 0.8
     }
