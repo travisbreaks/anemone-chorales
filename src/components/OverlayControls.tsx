@@ -207,15 +207,15 @@ export default function OverlayControls({
     <div className="overlay">
       {/* Fullscreen album art overlay */}
       {artExpanded && (
-        <div className="art-overlay" onClick={() => setArtExpanded(false)}>
+        <button type="button" className="art-overlay" onClick={() => setArtExpanded(false)}>
           <img src="./album-art.png" alt="Anemone Chorales Vol. 1" className="art-fullscreen" />
-        </div>
+        </button>
       )}
 
       {/* Controls panel — centered bottom */}
       <div className="controls-panel">
         {/* Title row — clickable to expand album art */}
-        <div className="title-row" onClick={handleArtClick}>
+        <button type="button" className="title-row" onClick={handleArtClick}>
           <div className="album-art-wrap">
             <img src="./album-art.png" alt="Anemone Chorales Vol. 1" className="album-art" />
             {!hasClicked && (
@@ -229,12 +229,13 @@ export default function OverlayControls({
             <span className="title-line">Anemone</span>
             <span className="title-line title-line--offset">Chorales</span>
           </h1>
-        </div>
+        </button>
 
         <div className="panel-divider" />
 
         {/* Play/Pause — inverts when active */}
         <button
+          type="button"
           className={`play-btn ${isPlaying ? 'play-btn--active' : ''}`}
           onClick={onToggleAudio}
           disabled={!audioReady}
@@ -249,6 +250,7 @@ export default function OverlayControls({
           {BIOME_IDS.map((id) => (
             <button
               key={id}
+              type="button"
               className="biome-btn"
               data-active={config.biome === id}
               onClick={() => onConfigChange({ biome: id })}
@@ -320,6 +322,7 @@ export default function OverlayControls({
             <canvas ref={depthCanvasRef} width={280} height={48} className="depth-canvas" />
           </div>
           <button
+            type="button"
             ref={resetBtnRef}
             className="depth-reset"
             onClick={() => {
