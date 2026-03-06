@@ -56,7 +56,7 @@ export default function LoadingScreen({ progress, phase, onEnter }: Props) {
           borderRadius: '24px',
           border: '1px solid rgba(196, 91, 160, 0.06)',
           background:
-            'radial-gradient(ellipse at center, rgba(10, 4, 18, 0.55) 0%, rgba(10, 4, 18, 0.35) 60%, transparent 100%)',
+            'radial-gradient(ellipse at center, rgba(10, 4, 18, 0.92) 0%, rgba(10, 4, 18, 0.82) 60%, rgba(10, 4, 18, 0.65) 100%)',
         }}
       >
         {/* Album art */}
