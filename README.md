@@ -3,7 +3,8 @@
 Real-time 3D audio visualization engine. A bioluminescent sea anemone that dances to music, driven by frequency analysis, custom GLSL shaders, and a depth-based energy model.
 
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://travisbreaks.org/share/parse-and-garner/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Code: MIT](https://img.shields.io/badge/code-MIT-blue.svg)](LICENSE)
+[![Music: CC BY-NC-ND 4.0](https://img.shields.io/badge/music-CC_BY--NC--ND_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
 [![React](https://img.shields.io/badge/React-19-61dafb)](https://react.dev)
 [![Three.js](https://img.shields.io/badge/Three.js-GLSL-black)](https://threejs.org)
 [![Web Audio API](https://img.shields.io/badge/Web_Audio-FFT-purple)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
