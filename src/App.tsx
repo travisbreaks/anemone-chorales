@@ -191,8 +191,17 @@ export default function App() {
         setMicActive(true)
         setMicError(null)
       } catch (err) {
-        const isDenied = err instanceof DOMException && err.name === 'NotAllowedError'
-        setMicError(isDenied ? 'Microphone access was denied.' : 'Failed to enable microphone.')
+        if (err instanceof DOMException) {
+          if (err.name === 'NotAllowedError') {
+            setMicError('Microphone access was denied. Please allow microphone permission and try again.')
+          } else if (err.name === 'NotFoundError') {
+            setMicError('No microphone was found. Please connect a microphone or, on macOS, check System Settings → Privacy & Security → Microphone.')
+          } else {
+            setMicError(`Microphone error: ${err.message}`)
+          }
+        } else {
+          setMicError('An unexpected error occurred while accessing the microphone.')
+        }
       }
     }
   }, [micActive])
