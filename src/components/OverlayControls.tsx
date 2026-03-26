@@ -6,11 +6,14 @@ interface Props {
   config: AnemoneConfig
   isPlaying: boolean
   audioReady: boolean
+  micActive: boolean
+  micError: string | null
   analysisRef: React.RefObject<AudioAnalysis>
   heatRef: React.MutableRefObject<number>
   depthModeRef: React.MutableRefObject<{ mode: 'normal' | 'ascending' | 'paused'; pauseUntil: number }>
   onConfigChange: (update: Partial<AnemoneConfig>) => void
   onToggleAudio: () => void
+  onToggleMic: () => void
 }
 
 const BIOME_IDS: BiomeId[] = ['biolum', 'abyss', 'gravitas']
@@ -19,11 +22,14 @@ export default function OverlayControls({
   config,
   isPlaying,
   audioReady,
+  micActive,
+  micError,
   analysisRef,
   heatRef,
   depthModeRef,
   onConfigChange,
   onToggleAudio,
+  onToggleMic,
 }: Props) {
   const [artExpanded, setArtExpanded] = useState(false)
   const [hasClicked, setHasClicked] = useState(false)
@@ -242,6 +248,18 @@ export default function OverlayControls({
         >
           {!audioReady ? 'LOADING...' : isPlaying ? 'PAUSE' : 'PLAY'}
         </button>
+
+        {/* Mic input toggle */}
+        <button
+          type="button"
+          className={`play-btn ${micActive ? 'play-btn--active' : ''}`}
+          style={{ marginTop: '0.4rem' }}
+          onClick={onToggleMic}
+          disabled={!audioReady}
+        >
+          {micActive ? 'MIC ON' : 'MIC'}
+        </button>
+        {micError && <p className="mic-error">{micError}</p>}
 
         <div className="panel-divider" />
 

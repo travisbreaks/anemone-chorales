@@ -230,6 +230,14 @@ canvas {
   cursor: default;
 }
 
+.mic-error {
+  color: #ff6b6b;
+  font-size: 10px;
+  margin-top: 4px;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
 .panel-divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(196, 91, 160, 0.15), transparent);

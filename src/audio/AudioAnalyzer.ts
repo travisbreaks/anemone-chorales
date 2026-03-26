@@ -24,6 +24,11 @@ export class AudioAnalyzer {
   private trebleLevel = 0
   private _isPlaying = false
 
+  // Mic input state
+  private micSource: MediaStreamAudioSourceNode | null = null
+  private micStream: MediaStream | null = null
+  private _isMicActive = false
+
   // Transient detection state
   private prevBassRaw = 0
   private transientLevel = 0
@@ -35,6 +40,51 @@ export class AudioAnalyzer {
 
   get isPlaying() {
     return this._isPlaying
+  }
+
+  get isMicActive() {
+    return this._isMicActive
+  }
+
+  async enableMic(): Promise<void> {
+    if (!this.audioContext || !this.analyser || !this.gainNode || !this.source) return
+    if (this._isMicActive) return
+
+    // Resume context if suspended (browser auto-suspends until user gesture)
+    if (this.audioContext.state === 'suspended') {
+      await this.audioContext.resume()
+    }
+
+    // Throws NotAllowedError if user denies, NotFoundError if no mic
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+
+    // Disconnect all outputs (no-arg form avoids DOMException from missing edge lookups)
+    this.source.disconnect()
+    // Mute speakers to prevent mic feedback loop
+    this.analyser.disconnect(this.audioContext.destination)
+
+    this.micStream = stream
+    this.micSource = this.audioContext.createMediaStreamSource(stream)
+    this.micSource.connect(this.analyser)
+    this._isMicActive = true
+  }
+
+  disableMic(): void {
+    if (!this.audioContext || !this.analyser || !this.gainNode || !this.source) return
+    if (!this._isMicActive) return
+
+    this.micSource?.disconnect()
+    this.micSource = null
+
+    // Stop all mic tracks so the browser mic indicator light turns off
+    this.micStream?.getTracks().forEach((t) => t.stop())
+    this.micStream = null
+
+    // Restore original audio graph
+    this.source.connect(this.gainNode)
+    this.analyser.connect(this.audioContext.destination)
+    this._isMicActive = false
+    this.zeroLevels()
   }
 
   async init(audioUrl: string): Promise<HTMLAudioElement> {
@@ -212,6 +262,7 @@ export class AudioAnalyzer {
   }
 
   dispose() {
+    if (this._isMicActive) this.disableMic()
     this.pause()
     if (this.audioElement) {
       this.audioElement.src = ''
