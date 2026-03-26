@@ -174,9 +174,14 @@ export default function App() {
   const handleToggleAudio = useCallback(async () => {
     const analyzer = analyzerRef.current
     if (!analyzer) return
+    if (micActive && !analyzer.isPlaying) {
+      analyzer.disableMic()
+      setMicActive(false)
+      setMicError(null)
+    }
     await analyzer.toggle()
     setIsPlaying(analyzer.isPlaying)
-  }, [])
+  }, [micActive])
 
   const handleToggleMic = useCallback(async () => {
     const analyzer = analyzerRef.current
@@ -187,6 +192,10 @@ export default function App() {
       setMicError(null)
     } else {
       try {
+        if (analyzer.isPlaying) {
+          analyzer.pause()
+          setIsPlaying(false)
+        }
         await analyzer.enableMic()
         setMicActive(true)
         setMicError(null)
