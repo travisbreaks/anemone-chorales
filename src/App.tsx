@@ -22,6 +22,8 @@ export default function App() {
   const [config, setConfig] = useState<AnemoneConfig>(DEFAULT_CONFIG)
   const [isPlaying, setIsPlaying] = useState(false)
   const [audioReady, setAudioReady] = useState(false)
+  const [micActive, setMicActive] = useState(false)
+  const [micError, setMicError] = useState<string | null>(null)
   const [showLoading, setShowLoading] = useState(true)
   // Phase: 'loading' → 'ready' (click to enter) → 'transition' (fade) → 'done'
   const [loadPhase, setLoadPhase] = useState<'loading' | 'ready' | 'transition' | 'done'>('loading')
@@ -105,7 +107,7 @@ export default function App() {
         let targetMid = 0
         let targetTreble = 0
 
-        if (analyzer && analyzer.isPlaying) {
+        if (analyzer && (analyzer.isPlaying || analyzer.isMicActive)) {
           analyzer.tick()
           const raw = analyzer.getAnalysis()
           targetBass = raw.bassLevel
@@ -125,7 +127,7 @@ export default function App() {
         if (smoothed.treble < 0.001) smoothed.treble = 0
 
         // Transient passes through unsmoothed — it's already decay-managed in AudioAnalyzer
-        const rawAnalysis = analyzer?.isPlaying ? analyzer.getAnalysis() : null
+        const rawAnalysis = (analyzer?.isPlaying || analyzer?.isMicActive) ? analyzer.getAnalysis() : null
 
         analysisRef.current = {
           frequencyData: rawAnalysis?.frequencyData ?? new Uint8Array(64),
@@ -172,9 +174,46 @@ export default function App() {
   const handleToggleAudio = useCallback(async () => {
     const analyzer = analyzerRef.current
     if (!analyzer) return
+    if (micActive && !analyzer.isPlaying) {
+      analyzer.disableMic()
+      setMicActive(false)
+      setMicError(null)
+    }
     await analyzer.toggle()
     setIsPlaying(analyzer.isPlaying)
-  }, [])
+  }, [micActive])
+
+  const handleToggleMic = useCallback(async () => {
+    const analyzer = analyzerRef.current
+    if (!analyzer) return
+    if (micActive) {
+      analyzer.disableMic()
+      setMicActive(false)
+      setMicError(null)
+    } else {
+      try {
+        if (analyzer.isPlaying) {
+          analyzer.pause()
+          setIsPlaying(false)
+        }
+        await analyzer.enableMic()
+        setMicActive(true)
+        setMicError(null)
+      } catch (err) {
+        if (err instanceof DOMException) {
+          if (err.name === 'NotAllowedError') {
+            setMicError('Microphone access was denied. Please allow microphone permission and try again.')
+          } else if (err.name === 'NotFoundError') {
+            setMicError('No microphone was found. Please connect a microphone or, on macOS, check System Settings → Privacy & Security → Microphone.')
+          } else {
+            setMicError(`Microphone error: ${err.message}`)
+          }
+        } else {
+          setMicError('An unexpected error occurred while accessing the microphone.')
+        }
+      }
+    }
+  }, [micActive])
 
   // "Click to enter" → fade out → remove
   const handleEnter = useCallback(() => {
@@ -215,11 +254,14 @@ export default function App() {
           config={config}
           isPlaying={isPlaying}
           audioReady={audioReady}
+          micActive={micActive}
+          micError={micError}
           analysisRef={analysisRef}
           heatRef={heatRef}
           depthModeRef={depthModeRef}
           onConfigChange={handleConfigChange}
           onToggleAudio={handleToggleAudio}
+          onToggleMic={handleToggleMic}
         />
       )}
     </div>
