@@ -9,7 +9,7 @@ Real-time 3D audio visualization engine. A bioluminescent sea anemone that dance
 [![Three.js](https://img.shields.io/badge/Three.js-GLSL-black)](https://threejs.org)
 [![Web Audio API](https://img.shields.io/badge/Web_Audio-FFT-purple)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
 
-![anemone-chorales](https://assets.travisbreaks.com/github/anemone-chorales.png)
+![anemone-chorales](anemone.jpeg)
 
 ## Tech Stack
 
